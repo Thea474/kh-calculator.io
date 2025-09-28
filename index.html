@@ -19,61 +19,61 @@
         }
         .calculator {
             width: 100%;
-            max-width: 500px;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 350px;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             background-color: #ffffff;
             position: relative;
             box-sizing: border-box;
         }
         @media (max-width: 480px) {
             .calculator {
-                padding: 10px;
+                padding: 8px;
                 max-width: 100%;
             }
             .btn {
-                height: 60px;
-                font-size: 1.5em;
+                height: 55px;
+                font-size: 1.4em;
             }
             .result-display {
-                font-size: 2em;
-                height: 50px;
+                font-size: 1.8em;
+                height: 45px;
             }
             .calculation-display {
-                font-size: 1.2em;
-                height: 25px;
+                font-size: 1.1em;
+                height: 20px;
             }
             .nav-tabs .nav-link {
-                font-size: 1em;
-                padding: 0.75rem 1rem;
+                font-size: 0.9em;
+                padding: 0.6rem 0.8rem;
             }
             .lang-buttons {
-                margin-top: 15px;
+                margin-top: 12px;
             }
             .lang-buttons .btn {
-                font-size: 0.9em;
-                padding: 0.5rem 1rem;
+                font-size: 0.8em;
+                padding: 0.4rem 0.8rem;
             }
         }
         @media (min-width: 768px) {
             .calculator {
-                width: 500px;
-                padding: 30px;
-                max-width: 550px;
+                width: 400px;
+                padding: 20px;
+                max-width: 450px;
             }
             .btn {
-                height: 85px;
-                font-size: 2.2em;
+                height: 75px;
+                font-size: 2em;
             }
             .result-display {
-                font-size: 3.2em;
+                font-size: 2.8em;
             }
         }
         @media (min-width: 1200px) {
             .calculator {
-                max-width: 600px;
-                padding: 35px;
+                max-width: 500px;
+                padding: 25px;
             }
         }
         .nav-tabs {
@@ -87,10 +87,10 @@
         }
         .display-container {
             text-align: right;
-            margin-bottom: 25px;
-            padding: 15px;
+            margin-bottom: 20px;
+            padding: 12px;
             background-color: #e9ecef;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
         }
@@ -107,29 +107,29 @@
             color: #343a40;
         }
         .calculation-display {
-            font-size: 1.5em;
+            font-size: 1.3em;
             color: #6c757d;
-            height: 30px;
+            height: 25px;
             overflow-x: auto;
             white-space: nowrap;
         }
         .result-display {
-            font-size: 3em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #343a40;
-            height: 70px;
+            height: 60px;
             overflow-x: auto;
             white-space: nowrap;
         }
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 12px;
         }
         .btn {
-            height: 80px;
-            font-size: 2em;
-            border-radius: 10px;
+            height: 70px;
+            font-size: 1.8em;
+            border-radius: 8px;
             transition: transform 0.1s, background-color 0.2s;
         }
         .btn:active {
@@ -177,7 +177,7 @@
             background-color: #138496;
         }
         .lang-buttons {
-            margin-top: 25px;
+            margin-top: 20px;
             display: flex;
             justify-content: space-around;
         }
@@ -192,10 +192,10 @@
             width: 100%;
             height: 100%;
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
+            border-radius: 12px;
             display: none;
             flex-direction: column;
-            padding: 30px;
+            padding: 25px;
             box-sizing: border-box;
             overflow-y: auto;
         }
@@ -203,9 +203,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: bold;
-            font-size: 1.8em;
+            font-size: 1.6em;
         }
         .history-panel-header button {
             background: none;
@@ -219,7 +219,7 @@
             margin: 0;
         }
         .history-item {
-            padding: 15px;
+            padding: 12px;
             border-bottom: 1px solid #e9ecef;
             transition: background-color 0.2s;
             position: relative;
@@ -228,11 +228,11 @@
             background-color: #f8f9fa;
         }
         .history-item-calc {
-            font-size: 1.1em;
+            font-size: 1em;
             color: #6c757d;
         }
         .history-item-result {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #343a40;
         }
@@ -268,126 +268,116 @@
             margin-top: 50px;
         }
         .it-converter, .ip-calculator {
-            padding: 20px;
+            padding: 15px;
         }
         .it-converter h4, .ip-calculator h4 {
-            font-size: 1.5em;
-            margin-bottom: 20px;
+            font-size: 1.3em;
+            margin-bottom: 15px;
             font-weight: bold;
         }
         .it-converter input, .ip-calculator input {
             width: 100%;
-            padding: 10px;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            border-radius: 5px;
+            padding: 8px;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            border-radius: 4px;
             border: 1px solid #ced4da;
             box-sizing: border-box;
         }
         .it-converter .conversion-result {
-            margin-top: 15px;
+            margin-top: 12px;
             background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 4px;
         }
         .it-converter .conversion-result p {
-            margin: 5px 0;
-            font-size: 1.2em;
+            margin: 4px 0;
+            font-size: 1.1em;
         }
         .it-converter .conversion-result span {
             font-weight: bold;
         }
         .ip-calculator .ip-result {
-            margin-top: 15px;
+            margin-top: 12px;
             background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 4px;
         }
         .ip-calculator .ip-result p {
-            margin: 5px 0;
-            font-size: 1.2em;
+            margin: 4px 0;
+            font-size: 1.1em;
         }
         .ip-calculator .ip-result span {
             font-weight: bold;
         }
         @media (max-width: 480px) {
             .it-converter, .ip-calculator {
-                padding: 10px;
+                padding: 8px;
             }
             .it-converter h4, .ip-calculator h4 {
-                font-size: 1.3em;
-                margin-bottom: 15px;
-            }
-            .it-converter input, .ip-calculator input {
-                padding: 8px;
-                font-size: 1em;
+                font-size: 1.2em;
                 margin-bottom: 12px;
             }
+            .it-converter input, .ip-calculator input {
+                padding: 6px;
+                font-size: 0.9em;
+                margin-bottom: 10px;
+            }
             .it-converter .conversion-result, .ip-calculator .ip-result {
-                padding: 10px;
+                padding: 8px;
             }
             .it-converter .conversion-result p, .ip-calculator .ip-result p {
-                font-size: 1em;
+                font-size: 0.9em;
             }
             .ip-calculator .btn-block {
-                padding: 10px;
-                font-size: 1em;
+                padding: 8px;
+                font-size: 0.9em;
             }
         }
         @media (min-width: 768px) {
             .it-converter, .ip-calculator {
-                padding: 25px;
+                padding: 20px;
             }
             .it-converter h4, .ip-calculator h4 {
-                font-size: 1.6em;
-                margin-bottom: 25px;
+                font-size: 1.4em;
+                margin-bottom: 20px;
             }
             .it-converter input, .ip-calculator input {
-                padding: 12px;
-                font-size: 1.3em;
-                margin-bottom: 18px;
+                padding: 10px;
+                font-size: 1.2em;
+                margin-bottom: 15px;
             }
             .it-converter .conversion-result, .ip-calculator .ip-result {
-                padding: 18px;
+                padding: 15px;
             }
             .it-converter .conversion-result p, .ip-calculator .ip-result p {
-                font-size: 1.3em;
+                font-size: 1.2em;
             }
         }
         @media (min-width: 1200px) {
             .it-converter, .ip-calculator {
-                padding: 30px;
+                padding: 22px;
             }
             .it-converter h4, .ip-calculator h4 {
-                font-size: 1.7em;
-                margin-bottom: 25px;
+                font-size: 1.5em;
+                margin-bottom: 22px;
             }
             .it-converter input, .ip-calculator input {
-                padding: 14px;
-                font-size: 1.4em;
-                margin-bottom: 20px;
+                padding: 11px;
+                font-size: 1.3em;
+                margin-bottom: 16px;
             }
             .it-converter .conversion-result, .ip-calculator .ip-result {
-                padding: 20px;
+                padding: 16px;
             }
             .it-converter .conversion-result p, .ip-calculator .ip-result p {
-                font-size: 1.4em;
+                font-size: 1.3em;
             }
         }
         .scientific-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-        .scientific-buttons .btn {
-            height: 40px;
-            font-size: 1em;
-        }
-        #scientific .result-display {
-            font-size: 1.5em;
-        }
-        #scientific .calculator {
-            max-width: 400px;
+            gap: 12px;
         }
         .clear-btn {
             grid-column: span 2;
