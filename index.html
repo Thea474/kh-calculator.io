@@ -347,6 +347,7 @@
             </div>
             
             <div class="tab-pane" id="scientific" role="tabpanel" aria-labelledby="scientific-tab">
+                <button class="btn btn-secondary mb-3" onclick="switchToStandard()">Back to Standard</button>
                 <div class="display-container">
                     <i class="fas fa-history history-icon" id="scientific-history-toggle"></i>
                     <div class="calculation-display" id="scientific-calculation-display"></div>
@@ -356,6 +357,7 @@
             </div>
 
             <div class="tab-pane" id="it" role="tabpanel" aria-labelledby="it-tab">
+                <button class="btn btn-secondary mb-3" onclick="switchToStandard()">Back to Standard</button>
                 <div class="it-converter">
                     <h4>Number System Converter</h4>
                     <div class="form-group">
@@ -378,6 +380,7 @@
             </div>
 
             <div class="tab-pane" id="ip" role="tabpanel" aria-labelledby="ip-tab">
+                <button class="btn btn-secondary mb-3" onclick="switchToStandard()">Back to Standard</button>
                 <div class="ip-calculator">
                     <h4>IP Subnet Calculator</h4>
                     <div class="form-group">
@@ -881,6 +884,11 @@
             }
             clearAll();
         });
+
+        function switchToStandard() {
+            $('#standard-tab').tab('show');
+            clearAll();
+        }
 
         // Initial setup
         setLanguage('en');
