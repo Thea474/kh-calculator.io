@@ -282,6 +282,7 @@
             margin-bottom: 15px;
             border-radius: 5px;
             border: 1px solid #ced4da;
+            box-sizing: border-box;
         }
         .it-converter .conversion-result {
             margin-top: 15px;
@@ -309,10 +310,84 @@
         .ip-calculator .ip-result span {
             font-weight: bold;
         }
+        @media (max-width: 480px) {
+            .it-converter, .ip-calculator {
+                padding: 10px;
+            }
+            .it-converter h4, .ip-calculator h4 {
+                font-size: 1.3em;
+                margin-bottom: 15px;
+            }
+            .it-converter input, .ip-calculator input {
+                padding: 8px;
+                font-size: 1em;
+                margin-bottom: 12px;
+            }
+            .it-converter .conversion-result, .ip-calculator .ip-result {
+                padding: 10px;
+            }
+            .it-converter .conversion-result p, .ip-calculator .ip-result p {
+                font-size: 1em;
+            }
+            .ip-calculator .btn-block {
+                padding: 10px;
+                font-size: 1em;
+            }
+        }
+        @media (min-width: 768px) {
+            .it-converter, .ip-calculator {
+                padding: 25px;
+            }
+            .it-converter h4, .ip-calculator h4 {
+                font-size: 1.6em;
+                margin-bottom: 25px;
+            }
+            .it-converter input, .ip-calculator input {
+                padding: 12px;
+                font-size: 1.3em;
+                margin-bottom: 18px;
+            }
+            .it-converter .conversion-result, .ip-calculator .ip-result {
+                padding: 18px;
+            }
+            .it-converter .conversion-result p, .ip-calculator .ip-result p {
+                font-size: 1.3em;
+            }
+        }
+        @media (min-width: 1200px) {
+            .it-converter, .ip-calculator {
+                padding: 30px;
+            }
+            .it-converter h4, .ip-calculator h4 {
+                font-size: 1.7em;
+                margin-bottom: 25px;
+            }
+            .it-converter input, .ip-calculator input {
+                padding: 14px;
+                font-size: 1.4em;
+                margin-bottom: 20px;
+            }
+            .it-converter .conversion-result, .ip-calculator .ip-result {
+                padding: 20px;
+            }
+            .it-converter .conversion-result p, .ip-calculator .ip-result p {
+                font-size: 1.4em;
+            }
+        }
         .scientific-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
+        }
+        .scientific-buttons .btn {
+            height: 60px;
+            font-size: 1.5em;
+        }
+        #scientific .result-display {
+            font-size: 2.5em;
+        }
+        #scientific .calculator {
+            max-width: 550px;
         }
         .clear-btn {
             grid-column: span 2;
@@ -445,6 +520,14 @@
         let language = 'en';
         let calculationHistory = [];
         let activeCalculator = 'standard';
+
+        // Scientific state
+        let sciCurrentInput = '0';
+        let sciPrevInput = '';
+        let sciOperator = null;
+        let sciExpression = '';
+
+
 
         const translations = {
             en: {
@@ -633,59 +716,149 @@
             const sciDisplay = scientificResultDisplay;
 
             if (!isNaN(parseFloat(num)) || num === '.') {
-                if (currentInput === '0' && num !== '.') currentInput = num;
-                else if (num === '.' && currentInput.includes('.')) return;
-                else currentInput += num;
-                sciDisplay.textContent = getDisplayValue(currentInput);
+                if (sciCurrentInput === '0' && num !== '.') {
+                    sciCurrentInput = num;
+                } else {
+                    if (num === '.' && sciCurrentInput.includes('.')) return;
+                    sciCurrentInput += num;
+                }
+                sciDisplay.textContent = getDisplayValue(sciCurrentInput);
+                // Update calculation display if operator is set
+                if (sciOperator) {
+                    scientificCalculationDisplay.textContent = getDisplayValue(sciPrevInput, 'en') + ' ' + sciOperator + ' ' + getDisplayValue(sciCurrentInput);
+                }
             } else if (value === 'C' || value === 'លុប') {
                 clearScientific();
             } else if (value === '⌫') {
-                currentInput = currentInput.slice(0, -1);
-                if (currentInput === '') currentInput = '0';
-                sciDisplay.textContent = getDisplayValue(currentInput);
-            } else if (value === '=') {
-                try {
-                    const result = eval(currentInput.replace('^', '**').replace('E', '*Math.E').replace('pi', '*Math.PI'));
-                    sciDisplay.textContent = getDisplayValue(result.toString());
-                    currentInput = result.toString();
-                    scientificCalculationDisplay.textContent = '';
-                } catch(e) {
-                    sciDisplay.textContent = getDisplayValue(translations[language].error);
-                    currentInput = '0';
+                sciCurrentInput = sciCurrentInput.slice(0, -1);
+                if (sciCurrentInput === '') {
+                    sciCurrentInput = '0';
                 }
+                sciDisplay.textContent = getDisplayValue(sciCurrentInput);
+            } else if (value === '=') {
+                calculateScientific();
+            } else if (value === '%') {
+                try {
+                    sciCurrentInput = Big(sciCurrentInput).div(100).toString();
+                    sciDisplay.textContent = getDisplayValue(sciCurrentInput);
+                } catch(e) {}
             } else if (['sin', 'cos', 'tan', 'sqrt', 'log', 'ln'].includes(value)) {
                 try {
-                    const val = parseFloat(currentInput);
+                    const val = Big(sciCurrentInput);
                     let result;
+                    const radVal = val.toNumber(); // For trig functions in radians
                     switch (value) {
-                        case 'sin': result = Math.sin(val); break;
-                        case 'cos': result = Math.cos(val); break;
-                        case 'tan': result = Math.tan(val); break;
-                        case 'sqrt': result = Math.sqrt(val); break;
-                        case 'log': result = Math.log10(val); break;
-                        case 'ln': result = Math.log(val); break;
+                        case 'sin': result = Big(Math.sin(radVal)); break;
+                        case 'cos': result = Big(Math.cos(radVal)); break;
+                        case 'tan': result = Big(Math.tan(radVal)); break;
+                        case 'sqrt': result = val.sqrt(); break;
+                        case 'log': result = val.log(10); break;
+                        case 'ln': result = val.ln(); break;
                     }
-                    scientificCalculationDisplay.textContent = `${value}(${getDisplayValue(currentInput)}) =`;
-                    currentInput = result.toString();
-                    sciDisplay.textContent = getDisplayValue(currentInput);
+                    scientificCalculationDisplay.textContent = `${value}(${getDisplayValue(sciCurrentInput)}) =`;
+                    sciCurrentInput = result.toString();
+                    sciDisplay.textContent = getDisplayValue(sciCurrentInput);
+                    sciExpression = `${value}(${sciCurrentInput})`;
                 } catch(e) {
                     sciDisplay.textContent = getDisplayValue(translations[language].error);
-                    currentInput = '0';
+                    clearScientific();
                 }
             } else if (value === 'e') {
-                currentInput += Math.E;
-                sciDisplay.textContent = getDisplayValue(currentInput);
+                sciCurrentInput += Big(Math.E).toString();
+                sciDisplay.textContent = getDisplayValue(sciCurrentInput);
             } else if (value === 'x^y') {
-                currentInput += '**';
-                scientificCalculationDisplay.textContent = getDisplayValue(currentInput);
+                // Treat as binary power operator
+                if (sciCurrentInput === '' || sciCurrentInput === '0') return;
+                if (sciPrevInput !== '') {
+                    calculateScientific();
+                    sciPrevInput = sciDisplay.textContent;
+                } else {
+                    sciPrevInput = sciCurrentInput;
+                }
+                sciOperator = 'pow';
+                sciCurrentInput = '';
+                scientificCalculationDisplay.textContent = getDisplayValue(sciPrevInput, 'en') + ' ^ ';
+            } else if (['+', '-', '*', '/', '÷', 'x'].includes(value)) {
+                const op = value === '÷' ? '/' : value === 'x' ? '*' : value;
+                if (sciCurrentInput === '' || sciCurrentInput === '0') return;
+                if (sciPrevInput !== '') {
+                    calculateScientific();
+                    sciPrevInput = sciDisplay.textContent;
+                } else {
+                    sciPrevInput = sciCurrentInput;
+                }
+                sciOperator = op;
+                sciCurrentInput = '';
+                scientificCalculationDisplay.textContent = getDisplayValue(sciPrevInput, 'en') + ' ' + op + ' ';
+            } else if (['(', ')'].includes(value)) {
+                sciCurrentInput += value;
+                sciDisplay.textContent = getDisplayValue(sciCurrentInput);
+                scientificCalculationDisplay.textContent = getDisplayValue(sciCurrentInput);
             } else {
-                 currentInput += num;
-                 scientificCalculationDisplay.textContent = currentInput;
+                sciCurrentInput += num;
+                scientificCalculationDisplay.textContent = getDisplayValue(sciCurrentInput);
+            }
+        }
+
+        function calculateScientific() {
+            if (sciPrevInput === '' || sciCurrentInput === '' || sciOperator === null) {
+                // Fallback to eval for pure expression (functions, parentheses, etc.)
+                try {
+                    let expr = sciExpression || sciCurrentInput;
+                    expr = expr.replace(/\^/g, '**').replace(/E/g, '*Math.E').replace(/pi/g, '*Math.PI');
+                    let resultNum = eval(expr);
+                    let result = Big(resultNum);
+                    const calculationString = sciExpression || sciCurrentInput;
+                    calculationHistory.unshift({ calculation: calculationString, result: result.toString() });
+                    if (calculationHistory.length > 20) calculationHistory.pop();
+                    scientificCalculationDisplay.textContent = getDisplayValue(calculationString, language) + ' =';
+                    scientificResultDisplay.textContent = getDisplayValue(result.toString());
+                    sciCurrentInput = result.toString();
+                    sciExpression = '';
+                } catch(e) {
+                    scientificResultDisplay.textContent = getDisplayValue(translations[language].error);
+                    clearScientific();
+                }
+                return;
+            }
+            // Operator-based calculation with Big.js
+            try {
+                const prev = Big(sciPrevInput);
+                const current = Big(sciCurrentInput);
+                let result;
+                let calculationString = `${sciPrevInput} ${sciOperator} ${sciCurrentInput}`;
+                switch (sciOperator) {
+                    case '+': result = prev.plus(current); break;
+                    case '-': result = prev.minus(current); break;
+                    case '*': result = prev.times(current); break;
+                    case '/': 
+                        if (current.eq(0)) { 
+                            scientificResultDisplay.textContent = getDisplayValue(translations[language].error); 
+                            clearScientific(); 
+                            return; 
+                        }
+                        result = prev.div(current); 
+                        break;
+                    case 'pow': result = prev.pow(current); break;
+                }
+                calculationHistory.unshift({ calculation: calculationString, result: result.toString() });
+                if (calculationHistory.length > 20) calculationHistory.pop();
+                scientificCalculationDisplay.textContent = getDisplayValue(calculationString, language) + ' =';
+                scientificResultDisplay.textContent = getDisplayValue(result.toString());
+                sciPrevInput = result.toString();
+                sciCurrentInput = '';
+                sciOperator = null;
+            } catch(e) {
+                scientificResultDisplay.textContent = getDisplayValue(translations[language].error);
+                clearScientific();
             }
         }
 
         function clearScientific() {
-            currentInput = '0';
+            sciCurrentInput = '0';
+            sciPrevInput = '';
+            sciOperator = null;
+            sciExpression = '';
             scientificCalculationDisplay.textContent = '';
             scientificResultDisplay.textContent = '0';
         }
@@ -786,8 +959,7 @@
             operator = null;
             standardCalculationDisplay.textContent = '';
             standardResultDisplay.textContent = '0';
-            scientificCalculationDisplay.textContent = '';
-            scientificResultDisplay.textContent = '0';
+            clearScientific();
         }
         
         function clearHistory() {
@@ -815,8 +987,13 @@
         function editHistoryItem(index) {
             const item = calculationHistory[index];
             clearAll();
-            currentInput = item.result;
-            standardResultDisplay.textContent = getDisplayValue(currentInput);
+            if (activeCalculator === 'standard') {
+                currentInput = item.result;
+                standardResultDisplay.textContent = getDisplayValue(currentInput);
+            } else if (activeCalculator === 'scientific') {
+                sciCurrentInput = item.result;
+                scientificResultDisplay.textContent = getDisplayValue(sciCurrentInput);
+            }
             toggleHistory(false);
         }
 
@@ -874,16 +1051,18 @@
                 activeCalculator = 'standard';
                 historyToggle.style.display = 'block';
                 scientificHistoryToggle.style.display = 'none';
+                clearStandard();
             } else if (tabId === 'scientific') {
                 activeCalculator = 'scientific';
                 historyToggle.style.display = 'none';
                 scientificHistoryToggle.style.display = 'block';
+                clearScientific();
             } else {
                 activeCalculator = 'other';
                 historyToggle.style.display = 'none';
                 scientificHistoryToggle.style.display = 'none';
+                clearAll();
             }
-            clearAll();
         });
 
         function switchToStandard() {
