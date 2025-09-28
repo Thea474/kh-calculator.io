@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Multi-functional Calculator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/6.1.1/big.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+        .calculator {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background-color: #ffffff;
+            position: relative;
+            box-sizing: border-box;
+        }
+        @media (min-width: 768px) {
+            .calculator {
+                width: 500px;
+                padding: 30px;
+            }
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        .tab-content > div {
+            display: none;
+        }
+        .tab-content > div.active {
+            display: block;
+        }
+        .display-container {
+            text-align: right;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .history-icon {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
+        .history-icon:hover {
+            color: #343a40;
+        }
+        .calculation-display {
+            font-size: 1.5em;
+            color: #6c757d;
+            height: 30px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .result-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #343a40;
+            height: 70px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .btn {
+            height: 80px;
+            font-size: 2em;
+            border-radius: 10px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-operator {
+            background-color: #ffc107;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .btn-operator:hover {
+            background-color: #e0a800;
+            color: #ffffff;
+        }
+        .btn-equals {
+            background-color: #28a745;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .btn-equals:hover {
+            background-color: #218838;
+            color: #ffffff;
+        }
+        .btn-clear {
+            background-color: #dc3545;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .btn-clear:hover {
+            background-color: #c82333;
+            color: #ffffff;
+        }
+        .btn-number {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+        .btn-number:hover {
+            background-color: #5a6268;
+        }
+        .btn-special {
+            background-color: #17a2b8;
+            color: #ffffff;
+        }
+        .btn-special:hover {
+            background-color: #138496;
+        }
+        .lang-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .lang-buttons .btn {
+            height: auto;
+            font-size: 1em;
+        }
+        .history-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            display: none;
+            flex-direction: column;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .history-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.8em;
+        }
+        .history-panel-header button {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+        .history-item:hover {
+            background-color: #f8f9fa;
+        }
+        .history-item-calc {
+            font-size: 1.1em;
+            color: #6c757d;
+        }
+        .history-item-result {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .history-actions {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .history-actions button {
+            background: #e9ecef;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            padding: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .history-actions button:hover {
+            background-color: #ced4da;
+        }
+        .history-actions .edit-btn:hover {
+            color: #007bff;
+        }
+        .history-actions .delete-btn:hover {
+            color: #dc3545;
+        }
+        .no-history {
+            text-align: center;
+            color: #adb5bd;
+            margin-top: 50px;
+        }
+        .it-converter, .ip-calculator {
+            padding: 20px;
+        }
+        .it-converter h4, .ip-calculator h4 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .it-converter input, .ip-calculator input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        .it-converter .conversion-result {
+            margin-top: 15px;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .it-converter .conversion-result p {
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+        .it-converter .conversion-result span {
+            font-weight: bold;
+        }
+        .ip-calculator .ip-result {
+            margin-top: 15px;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .ip-calculator .ip-result p {
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+        .ip-calculator .ip-result span {
+            font-weight: bold;
+        }
+        .scientific-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .clear-btn {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="standard-tab" data-toggle="tab" href="#standard" role="tab" aria-controls="standard" aria-selected="true">Standard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="scientific-tab" data-toggle="tab" href="#scientific" role="tab" aria-controls="scientific" aria-selected="false">Scientific</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="it-tab" data-toggle="tab" href="#it" role="tab" aria-controls="it" aria-selected="false">IT</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="ip-tab" data-toggle="tab" href="#ip" role="tab" aria-controls="ip" aria-selected="false">IP</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="standard" role="tabpanel" aria-labelledby="standard-tab">
+                <div class="display-container">
+                    <i class="fas fa-history history-icon" id="history-toggle"></i>
+                    <div class="calculation-display" id="standard-calculation-display"></div>
+                    <div class="result-display" id="standard-result-display">0</div>
+                </div>
+                <div class="buttons" id="standard-buttons-container"></div>
+            </div>
+            
+            <div class="tab-pane" id="scientific" role="tabpanel" aria-labelledby="scientific-tab">
+                <div class="display-container">
+                    <i class="fas fa-history history-icon" id="scientific-history-toggle"></i>
+                    <div class="calculation-display" id="scientific-calculation-display"></div>
+                    <div class="result-display" id="scientific-result-display">0</div>
+                </div>
+                <div class="scientific-buttons" id="scientific-buttons-container"></div>
+            </div>
+
+            <div class="tab-pane" id="it" role="tabpanel" aria-labelledby="it-tab">
+                <div class="it-converter">
+                    <h4>Number System Converter</h4>
+                    <div class="form-group">
+                        <label for="decimal-input">Decimal</label>
+                        <input type="text" id="decimal-input" class="form-control" oninput="convertNumber('decimal')">
+                    </div>
+                    <div class="form-group">
+                        <label for="binary-input">Binary</label>
+                        <input type="text" id="binary-input" class="form-control" oninput="convertNumber('binary')">
+                    </div>
+                    <div class="form-group">
+                        <label for="octal-input">Octal</label>
+                        <input type="text" id="octal-input" class="form-control" oninput="convertNumber('octal')">
+                    </div>
+                    <div class="form-group">
+                        <label for="hex-input">Hexadecimal</label>
+                        <input type="text" id="hex-input" class="form-control" oninput="convertNumber('hex')">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="ip" role="tabpanel" aria-labelledby="ip-tab">
+                <div class="ip-calculator">
+                    <h4>IP Subnet Calculator</h4>
+                    <div class="form-group">
+                        <label for="ip-address">IP Address</label>
+                        <input type="text" id="ip-address" class="form-control" value="192.168.1.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cidr-mask">CIDR Mask</label>
+                        <input type="number" id="cidr-mask" class="form-control" min="1" max="32" value="24">
+                    </div>
+                    <button class="btn btn-success btn-block" onclick="calculateIP()">Calculate</button>
+                    <div class="ip-result mt-3">
+                        <p>IP Address: <span id="ip-output"></span></p>
+                        <p>Subnet Mask: <span id="subnet-output"></span></p>
+                        <p>Network Address: <span id="network-output"></span></p>
+                        <p>Broadcast Address: <span id="broadcast-output"></span></p>
+                        <p>Usable IP Range: <span id="range-output"></span></p>
+                        <p>Usable Hosts: <span id="hosts-output"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lang-buttons">
+            <button class="btn btn-info" onclick="setLanguage('en')">English</button>
+            <button class="btn btn-info" onclick="setLanguage('kh')">ខ្មែរ</button>
+        </div>
+
+        <div class="history-panel" id="history-panel">
+            <div class="history-panel-header">
+                <span id="history-title">Calculation History</span>
+                <button onclick="toggleHistory(false)">&times;</button>
+            </div>
+            <ul class="history-list" id="history-list">
+                <li class="no-history" id="no-history-message">No history yet.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const standardResultDisplay = document.getElementById('standard-result-display');
+        const standardCalculationDisplay = document.getElementById('standard-calculation-display');
+        const standardButtonsContainer = document.getElementById('standard-buttons-container');
+        const scientificResultDisplay = document.getElementById('scientific-result-display');
+        const scientificCalculationDisplay = document.getElementById('scientific-calculation-display');
+        const scientificButtonsContainer = document.getElementById('scientific-buttons-container');
+
+        const historyPanel = document.getElementById('history-panel');
+        const historyList = document.getElementById('history-list');
+        const noHistoryMessage = document.getElementById('no-history-message');
+        const historyToggle = document.getElementById('history-toggle');
+        const scientificHistoryToggle = document.getElementById('scientific-history-toggle');
+        const historyTitle = document.getElementById('history-title');
+
+        let currentInput = '0';
+        let prevInput = '';
+        let operator = null;
+        let language = 'en';
+        let calculationHistory = [];
+        let activeCalculator = 'standard';
+
+        const translations = {
+            en: {
+                buttons: [
+                    'C', '⌫', '%', '/',
+                    '7', '8', '9', '*',
+                    '4', '5', '6', '-',
+                    '1', '2', '3', '+',
+                    '0', '.', '00', '='
+                ],
+                scientificButtons: [
+                    'C', '⌫', 'sin', 'cos',
+                    'tan', 'log', 'ln', 'e',
+                    'x^y', 'sqrt', '(', ')',
+                    '7', '8', '9', '/',
+                    '4', '5', '6', '*',
+                    '1', '2', '3', '-',
+                    '0', '.', '=', '+'
+                ],
+                historyTitle: 'Calculation History',
+                noHistoryMessage: 'No history yet.',
+                error: 'Error',
+                deleteAll: 'Delete All'
+            },
+            kh: {
+                buttons: [
+                    'លុប', '⌫', '%', '÷',
+                    '៧', '៨', '៩', 'x',
+                    '៤', '៥', '៦', '-',
+                    '១', '២', '៣', '+',
+                    '០', '.', '០០', '='
+                ],
+                scientificButtons: [
+                    'លុប', '⌫', 'sin', 'cos',
+                    'tan', 'log', 'ln', 'e',
+                    'x^y', 'sqrt', '(', ')',
+                    '៧', '៨', '៩', '÷',
+                    '៤', '៥', '៦', 'x',
+                    '១', '២', '៣', '-',
+                    '០', '.', '=', '+'
+                ],
+                historyTitle: 'ប្រវត្តិគណនា',
+                noHistoryMessage: 'មិនទាន់មានប្រវត្តិនៅឡើយ។',
+                error: 'មានកំហុស',
+                deleteAll: 'លុបទាំងអស់'
+            }
+        };
+
+        const enToKh = {
+            '0': '០', '1': '១', '2': '២', '3': '៣', '4': '៤', '5': '៥',
+            '6': '៦', '7': '៧', '8': '៨', '9': '៩',
+            '/': '÷', '*': 'x', 'C': 'លុប', 'Error': 'មានកំហុស', '⌫': '⌫'
+        };
+
+        const khToEn = {
+            '០': '0', '១': '1', '២': '2', '៣': '3', '៤': '4', '៥': '5',
+            '៦': '6', '៧': '7', '៨': '8', '៩': '9',
+            '÷': '/', 'x': '*', 'មានកំហុស': 'Error', '⌫': '⌫'
+        };
+
+        function getDisplayValue(value, lang = language) {
+            const map = lang === 'kh' ? enToKh : {};
+            return String(value).split('').map(char => map[char] || char).join('');
+        }
+
+        function generateButtons(type) {
+            let container, buttons;
+            if (type === 'standard') {
+                container = standardButtonsContainer;
+                buttons = translations[language].buttons;
+            } else if (type === 'scientific') {
+                container = scientificButtonsContainer;
+                buttons = translations[language].scientificButtons;
+            }
+            container.innerHTML = '';
+            
+            const classMapping = {
+                'C': 'btn-clear', 'លុប': 'btn-clear',
+                '⌫': 'btn-special',
+                '±': 'btn-special',
+                '%': 'btn-special',
+                '/': 'btn-operator', '÷': 'btn-operator',
+                '*': 'btn-operator', 'x': 'btn-operator',
+                '-': 'btn-operator',
+                '+': 'btn-operator',
+                '=': 'btn-equals',
+                '.': 'btn-special',
+                '00': 'btn-number',
+                'sin': 'btn-special', 'cos': 'btn-special', 'tan': 'btn-special', 'sqrt': 'btn-special', 'log': 'btn-special', 'ln': 'btn-special', 'e': 'btn-special', 'x^y': 'btn-special', '(': 'btn-special', ')': 'btn-special'
+            };
+
+            buttons.forEach(label => {
+                const button = document.createElement('button');
+                button.textContent = label;
+                const className = classMapping[label] || (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'].includes(label) ? 'btn-number' : 'btn-secondary');
+                button.className = `btn ${className}`;
+                if (label === 'C' || label === 'លុប') {
+                    button.classList.add('clear-btn');
+                }
+                button.onclick = () => handleButtonClick(label, type);
+                container.appendChild(button);
+            });
+        }
+
+        function handleButtonClick(value, type) {
+            if (type === 'standard') {
+                handleStandardClick(value);
+            } else if (type === 'scientific') {
+                handleScientificClick(value);
+            }
+        }
+
+        function handleStandardClick(value) {
+            const num = khToEn[value] || value;
+            if (!isNaN(parseFloat(num)) || num === '.') {
+                if (currentInput === '0' && num !== '.') {
+                    currentInput = num;
+                } else {
+                    if (num === '.' && currentInput.includes('.')) return;
+                    currentInput += num;
+                }
+                standardResultDisplay.textContent = getDisplayValue(currentInput);
+            } else if (value === 'C' || value === 'លុប') {
+                clearStandard();
+            } else if (value === '⌫') {
+                currentInput = currentInput.slice(0, -1);
+                if (currentInput === '') {
+                    currentInput = '0';
+                }
+                standardResultDisplay.textContent = getDisplayValue(currentInput);
+            } else if (value === '=') {
+                calculateStandard();
+            } else if (value === '±') {
+                try { currentInput = Big(currentInput).times(-1).toString(); standardResultDisplay.textContent = getDisplayValue(currentInput); } catch(e) {}
+            } else if (value === '%') {
+                try { currentInput = Big(currentInput).div(100).toString(); standardResultDisplay.textContent = getDisplayValue(currentInput); } catch(e) {}
+            } else { // Operator
+                if (currentInput === '' || currentInput === '0') return;
+                if (prevInput !== '') { calculateStandard(); prevInput = standardResultDisplay.textContent; } else { prevInput = currentInput; }
+                operator = num;
+                currentInput = '';
+                standardCalculationDisplay.textContent = getDisplayValue(prevInput, 'en') + ' ' + value;
+            }
+        }
+
+        function calculateStandard() {
+            if (prevInput === '' || currentInput === '' || operator === null) return;
+            try {
+                const prev = Big(prevInput);
+                const current = Big(currentInput);
+                let result;
+                let calculationString = `${prevInput} ${operator} ${currentInput}`;
+
+                switch (operator) {
+                    case '+': result = prev.plus(current); break;
+                    case '-': result = prev.minus(current); break;
+                    case '*': result = prev.times(current); break;
+                    case '/': 
+                        if (current.eq(0)) { standardResultDisplay.textContent = getDisplayValue(translations[language].error); clearStandard(); return; }
+                        result = prev.div(current); 
+                        break;
+                }
+                calculationHistory.unshift({ calculation: calculationString, result: result.toString() });
+                if (calculationHistory.length > 20) calculationHistory.pop();
+                standardCalculationDisplay.textContent = getDisplayValue(calculationString, language) + ' =';
+                standardResultDisplay.textContent = getDisplayValue(result.toString());
+                prevInput = result.toString();
+                currentInput = '';
+                operator = null;
+            } catch(e) {
+                standardResultDisplay.textContent = getDisplayValue(translations[language].error);
+                clearStandard();
+            }
+        }
+
+        function clearStandard() {
+            currentInput = '0';
+            prevInput = '';
+            operator = null;
+            standardCalculationDisplay.textContent = '';
+            standardResultDisplay.textContent = '0';
+        }
+
+        function handleScientificClick(value) {
+            const num = khToEn[value] || value;
+            const sciDisplay = scientificResultDisplay;
+
+            if (!isNaN(parseFloat(num)) || num === '.') {
+                if (currentInput === '0' && num !== '.') currentInput = num;
+                else if (num === '.' && currentInput.includes('.')) return;
+                else currentInput += num;
+                sciDisplay.textContent = getDisplayValue(currentInput);
+            } else if (value === 'C' || value === 'លុប') {
+                clearScientific();
+            } else if (value === '⌫') {
+                currentInput = currentInput.slice(0, -1);
+                if (currentInput === '') currentInput = '0';
+                sciDisplay.textContent = getDisplayValue(currentInput);
+            } else if (value === '=') {
+                try {
+                    const result = eval(currentInput.replace('^', '**').replace('E', '*Math.E').replace('pi', '*Math.PI'));
+                    sciDisplay.textContent = getDisplayValue(result.toString());
+                    currentInput = result.toString();
+                    scientificCalculationDisplay.textContent = '';
+                } catch(e) {
+                    sciDisplay.textContent = getDisplayValue(translations[language].error);
+                    currentInput = '0';
+                }
+            } else if (['sin', 'cos', 'tan', 'sqrt', 'log', 'ln'].includes(value)) {
+                try {
+                    const val = parseFloat(currentInput);
+                    let result;
+                    switch (value) {
+                        case 'sin': result = Math.sin(val); break;
+                        case 'cos': result = Math.cos(val); break;
+                        case 'tan': result = Math.tan(val); break;
+                        case 'sqrt': result = Math.sqrt(val); break;
+                        case 'log': result = Math.log10(val); break;
+                        case 'ln': result = Math.log(val); break;
+                    }
+                    scientificCalculationDisplay.textContent = `${value}(${getDisplayValue(currentInput)}) =`;
+                    currentInput = result.toString();
+                    sciDisplay.textContent = getDisplayValue(currentInput);
+                } catch(e) {
+                    sciDisplay.textContent = getDisplayValue(translations[language].error);
+                    currentInput = '0';
+                }
+            } else if (value === 'e') {
+                currentInput += Math.E;
+                sciDisplay.textContent = getDisplayValue(currentInput);
+            } else if (value === 'x^y') {
+                currentInput += '**';
+                scientificCalculationDisplay.textContent = getDisplayValue(currentInput);
+            } else {
+                 currentInput += num;
+                 scientificCalculationDisplay.textContent = currentInput;
+            }
+        }
+
+        function clearScientific() {
+            currentInput = '0';
+            scientificCalculationDisplay.textContent = '';
+            scientificResultDisplay.textContent = '0';
+        }
+
+        function convertNumber(type) {
+            const decInput = document.getElementById('decimal-input');
+            const binInput = document.getElementById('binary-input');
+            const octInput = document.getElementById('octal-input');
+            const hexInput = document.getElementById('hex-input');
+
+            try {
+                let decimal;
+                if (type === 'decimal') {
+                    decimal = parseInt(decInput.value, 10);
+                    if (isNaN(decimal)) { clearConversionInputs(); return; }
+                } else if (type === 'binary') {
+                    decimal = parseInt(binInput.value, 2);
+                    if (isNaN(decimal)) { clearConversionInputs(); return; }
+                } else if (type === 'octal') {
+                    decimal = parseInt(octInput.value, 8);
+                    if (isNaN(decimal)) { clearConversionInputs(); return; }
+                } else if (type === 'hex') {
+                    decimal = parseInt(hexInput.value, 16);
+                    if (isNaN(decimal)) { clearConversionInputs(); return; }
+                }
+
+                decInput.value = decimal;
+                binInput.value = decimal.toString(2);
+                octInput.value = decimal.toString(8);
+                hexInput.value = decimal.toString(16).toUpperCase();
+
+            } catch (e) {
+                clearConversionInputs();
+            }
+        }
+
+        function clearConversionInputs() {
+            document.getElementById('decimal-input').value = '';
+            document.getElementById('binary-input').value = '';
+            document.getElementById('octal-input').value = '';
+            document.getElementById('hex-input').value = '';
+        }
+
+        function calculateIP() {
+            const ipAddress = document.getElementById('ip-address').value;
+            const cidrMask = document.getElementById('cidr-mask').value;
+
+            document.getElementById('ip-output').textContent = '';
+            document.getElementById('subnet-output').textContent = '';
+            document.getElementById('network-output').textContent = '';
+            document.getElementById('broadcast-output').textContent = '';
+            document.getElementById('range-output').textContent = '';
+            document.getElementById('hosts-output').textContent = '';
+
+            try {
+                const ipParts = ipAddress.split('.').map(Number);
+                if (ipParts.length !== 4 || ipParts.some(p => isNaN(p) || p < 0 || p > 255)) {
+                    throw new Error("Invalid IP address");
+                }
+                const mask = parseInt(cidrMask, 10);
+                if (isNaN(mask) || mask < 1 || mask > 32) {
+                    throw new Error("Invalid CIDR mask");
+                }
+                
+                const ipNum = ipParts[0] * 2**24 + ipParts[1] * 2**16 + ipParts[2] * 2**8 + ipParts[3];
+                const maskNum = 0xFFFFFFFF << (32 - mask) >>> 0;
+                const networkNum = (ipNum & maskNum) >>> 0;
+                const broadcastNum = networkNum | (~maskNum >>> 0);
+                const hosts = Math.pow(2, 32 - mask);
+                
+                const numToIp = num => {
+                    return [(num >> 24) & 0xFF, (num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF].join('.');
+                };
+
+                document.getElementById('ip-output').textContent = ipAddress;
+                document.getElementById('subnet-output').textContent = numToIp(maskNum);
+                document.getElementById('network-output').textContent = numToIp(networkNum);
+                document.getElementById('broadcast-output').textContent = numToIp(broadcastNum);
+                
+                if (mask === 32) {
+                    document.getElementById('range-output').textContent = "N/A";
+                    document.getElementById('hosts-output').textContent = "1";
+                } else if (mask === 31) {
+                    document.getElementById('range-output').textContent = `${numToIp(networkNum)} - ${numToIp(broadcastNum)}`;
+                    document.getElementById('hosts-output').textContent = "2";
+                } else {
+                    document.getElementById('range-output').textContent = `${numToIp(networkNum + 1)} - ${numToIp(broadcastNum - 1)}`;
+                    document.getElementById('hosts-output').textContent = hosts - 2;
+                }
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            prevInput = '';
+            operator = null;
+            standardCalculationDisplay.textContent = '';
+            standardResultDisplay.textContent = '0';
+            scientificCalculationDisplay.textContent = '';
+            scientificResultDisplay.textContent = '0';
+        }
+        
+        function clearHistory() {
+            calculationHistory = [];
+            renderHistory();
+        }
+
+        function setLanguage(lang) {
+            language = lang;
+            generateButtons('standard');
+            generateButtons('scientific');
+            clearAll();
+            historyTitle.textContent = translations[lang].historyTitle;
+            noHistoryMessage.textContent = translations[lang].noHistoryMessage;
+            renderHistory();
+        }
+
+        function toggleHistory(show) {
+            historyPanel.style.display = show ? 'flex' : 'none';
+            if (show) {
+                renderHistory();
+            }
+        }
+        
+        function editHistoryItem(index) {
+            const item = calculationHistory[index];
+            clearAll();
+            currentInput = item.result;
+            standardResultDisplay.textContent = getDisplayValue(currentInput);
+            toggleHistory(false);
+        }
+
+        function deleteHistoryItem(index) {
+            calculationHistory.splice(index, 1);
+            renderHistory();
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = '';
+            
+            if (calculationHistory.length === 0) {
+                historyList.appendChild(noHistoryMessage);
+                noHistoryMessage.style.display = 'block';
+            } else {
+                noHistoryMessage.style.display = 'none';
+                
+                const clearAllBtn = document.createElement('li');
+                clearAllBtn.innerHTML = `<button class="btn btn-danger btn-sm w-100">${translations[language].deleteAll}</button>`;
+                clearAllBtn.onclick = clearHistory;
+                historyList.appendChild(clearAllBtn);
+
+                calculationHistory.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'history-item';
+                    li.innerHTML = `
+                        <div class="history-content">
+                            <div class="history-item-calc">${getDisplayValue(item.calculation, language)}</div>
+                            <div class="history-item-result">${getDisplayValue(String(item.result))}</div>
+                        </div>
+                        <div class="history-actions">
+                            <button class="edit-btn" onclick="editHistoryItem(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" onclick="deleteHistoryItem(${index})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    historyList.appendChild(li);
+                });
+            }
+        }
+
+        historyToggle.addEventListener('click', () => {
+             activeCalculator = 'standard';
+             toggleHistory(historyPanel.style.display === 'none');
+        });
+
+        scientificHistoryToggle.addEventListener('click', () => {
+             activeCalculator = 'scientific';
+             toggleHistory(historyPanel.style.display === 'none');
+        });
+
+        // Event listener for tab clicks
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const tabId = $(e.target).attr('href').substring(1);
+            if (tabId === 'standard') {
+                activeCalculator = 'standard';
+                historyToggle.style.display = 'block';
+                scientificHistoryToggle.style.display = 'none';
+            } else if (tabId === 'scientific') {
+                activeCalculator = 'scientific';
+                historyToggle.style.display = 'none';
+                scientificHistoryToggle.style.display = 'block';
+            } else {
+                activeCalculator = 'other';
+                historyToggle.style.display = 'none';
+                scientificHistoryToggle.style.display = 'none';
+            }
+            clearAll();
+        });
+
+        // Initial setup
+        setLanguage('en');
+        $('a[data-toggle="tab"][href="#scientific"]').on('click', () => generateButtons('scientific'));
+        $('a[data-toggle="tab"][href="#standard"]').on('click', () => generateButtons('standard'));
+    </script>
+</body>
+</html>
