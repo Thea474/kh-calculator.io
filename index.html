@@ -20,17 +20,60 @@
         .calculator {
             width: 100%;
             max-width: 500px;
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             background-color: #ffffff;
             position: relative;
             box-sizing: border-box;
         }
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 10px;
+                max-width: 100%;
+            }
+            .btn {
+                height: 60px;
+                font-size: 1.5em;
+            }
+            .result-display {
+                font-size: 2em;
+                height: 50px;
+            }
+            .calculation-display {
+                font-size: 1.2em;
+                height: 25px;
+            }
+            .nav-tabs .nav-link {
+                font-size: 0.9em;
+                padding: 0.5rem 0.75rem;
+            }
+            .lang-buttons {
+                margin-top: 15px;
+            }
+            .lang-buttons .btn {
+                font-size: 0.9em;
+                padding: 0.5rem 1rem;
+            }
+        }
         @media (min-width: 768px) {
             .calculator {
                 width: 500px;
                 padding: 30px;
+                max-width: 550px;
+            }
+            .btn {
+                height: 85px;
+                font-size: 2.2em;
+            }
+            .result-display {
+                font-size: 3.2em;
+            }
+        }
+        @media (min-width: 1200px) {
+            .calculator {
+                max-width: 600px;
+                padding: 35px;
             }
         }
         .nav-tabs {
